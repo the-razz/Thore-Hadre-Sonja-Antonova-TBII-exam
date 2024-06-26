@@ -41,3 +41,55 @@
         print(item_description)
         print("harmless testing message from your beloved item_submit_page() function :33")
         # submit = False
+
+
+
+Flynn,images/cursed-lasagna.jpg,"This is a very cursed Lasagna with colgate taste, but I swear it will be the most delicious Lasagna you'll ever try!!!!"
+Felix,images/food-screen.png,"Hey, this is just a home screen of my food page, sorry to bother you with kind of random, unrelated content"
+ ,data/cursed-lasagna.jpg,again the very cursed lasagna
+ ,images/cursed-lasagna.jpg,once more this is the cursed lasagne
+Flynn,images/cursed-lasagna.jpg,ye yeslasagna lasagne cursed cursed
+Flynn,images/cursed-lasagna.jpg,AAAnd again the same lasagna
+Felix,images/cursed-lasagna.jpg,Hey this is Felix I also have a cursed lasagna to offer
+ ,images/cursed-lasagna.jpg,what the hell another cursed lasagna
+ ,,
+ ,images/cursed-lasagna.jpg,not a cursed lasagna
+ ,,
+ ,images/cursed-lasagna,also not a cursed lasagna
+ ,images/cursed-lasagna.jpg,"No, I will not enter an Item description!!!!"
+
+
+
+item_data.to_csv("data/item_info.csv", index=True, mode='a', header=['current_user_id', 'image_path', 'item_description'])
+
+
+# individual_entry_from_dataframe = item_info_data_frame[index].iloc[row]
+
+
+        #print(row['current_user_id'], row['image_path'], row['item_description'])
+        #return individual_entry_from_dataframe
+
+# print(individual_entry_from_dataframe)
+
+
+# separate the dataframe into variables that hold the separate columns
+current_user_id_column = item_info_data_frame.current_user_id
+image_path_column = item_info_data_frame.image_path
+item_info_column = item_info_data_frame.item_description
+
+
+# create individual lists for each item column data to be stored
+    item_info_user_ids_list = []
+item_info_user_ids_list.append(row['current_user_id'])
+
+new_variable = "Flynn"
+
+
+#print(item_info_user_ids_list)
+    #print(item_info_tuples_list[0][0] + " posted " + item_info_tuples_list[0][2] + " with the following image " + item_info_tuples_list[0][1])
+
+#cread out all the entries in the item_info.csv table
+    #all_item_info = list(pd.read_csv("data/item_info.csv", sep=',', on_bad_lines='skip'))
+#print(all_item_info)
+
+# tkinter_image = add_image(root, "images/photo_3_2024-05-27_15-59-53.jpg", 10, 20)

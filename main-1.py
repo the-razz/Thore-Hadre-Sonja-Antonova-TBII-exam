@@ -16,7 +16,8 @@ root.title("Food Sharing")
 screen_width = 720
 screen_height = 1080
 
-new_variable = "Flynn"
+i=-1
+
 def user_check():
     # check if user exists
 
@@ -37,34 +38,38 @@ def user_check():
     #else:
        # tk.messagebox.showwarning("Warning!!", "Please register as a new user")
 
-
 # this function reads out the information from item_info.csv and uses them to display the item on the main page
+# it creates a list of tuples that stores each row from the csv and then makes each entry from that list individually
+# accessible
 def item_name_retrieve_function():
-    #cread out all the entries in the item_info.csv table
-    #all_item_info = list(pd.read_csv("data/item_info.csv", sep=',', on_bad_lines='skip'))
-
+    global item_info_tuples_list
 
     # read out the whole content of the csv file item_info and store it as a dataframe
-    item_info_data_frame = pd.read_csv("data/item_info.csv", sep=',', on_bad_lines='skip')
-
-    # separate the dataframe into variables that hold the separate columns
-    current_user_id_column = item_info_data_frame.current_user_id
-    image_path_column = item_info_data_frame.image_path
-    item_info_column = item_info_data_frame.item_description
+    item_info_data_frame = pd.read_csv("data/item_info.csv", sep=',', on_bad_lines='skip', header=0)
 
     # create a variable that requests individual entries from the DataFrame using iloc
-    individual_entry_from_dataframe = item_info_data_frame['current_user_id'].iloc[1]
-    print(individual_entry_from_dataframe)
+    #individual_entry_from_dataframe = item_info_data_frame['current_user_id'].iloc[0]
+    #print(individual_entry_from_dataframe)
 
-    #image_path = all_item_info[0]
-    #item_description = all_item_info[1]
-    #print(current_user_id_column + " submitted " + item_info_column + " with this image " + image_path_column)
-    #print("This is the image path: " + image_path_column + " And this is the item")
-    #print("This is the item description: " + item_info_column)
+    # create a list that stores the value tuples taken from item_info_data_frame
+    item_info_tuples_list = []
 
-    #print(all_item_info)
+    # create a for loop that stores each row of information in a list that can be used to display the items later
+    # use iterrows method of pandas to iterate over the rows of the dataframe
+    #for index, row in item_info_data_frame.iterrows():
+    for index, row in item_info_data_frame.iterrows():
+        # append the values from the cells to the list as tuples
+        item_info_tuples_list.append((row['current_user_id'], row['image_path'], row['item_description']))
+
+    # a for loop that accesses each row in the tuples list and makes it accesible for the next function to use
+    # the range(len(tuples_list)) is required to make sure the iteration continues for number of rows only i.e. the number of tuples
+    # this is necessary because a list with tuples for some reason cannot be iterated >:(
+    for i in range(len(item_info_tuples_list)):
+       # print the message for testing purposes
+       #print(item_info_tuples_list[i][0] + " posted " + item_info_tuples_list[i][1] + " with the following image " + item_info_tuples_list[i][2])
+       i == i+1
+# to realise the list that was created within the function
 item_name_retrieve_function()
-
 
 # create function for simplified image imports
 def add_image(root, file_path, width, height):
@@ -217,12 +222,14 @@ def chat_page():
 
     add_image(root,"images/food-screen.png", screen_width, screen_height)
 
-    main_page_button = tk.Button(root,
-                      text='Back to main page',
-                      command=main_page)
-    main_page_button.place(relx=0.5, rely=0.5, width=100, anchor=tk.CENTER)
+    # create a custom back button that is also functioning the same way as the previous button from the main page
+    # to make sure the user does go back to exactly where they came from when clicking on the item
+    back_button = tk.Button(root,
+                            text='Back to last page',
+                            command=lambda: [test_item_button.destroy(), item_description_label.destroy(), display_individual_post_function(False),
+                                             main_page()])
+    back_button.place(relx=0.5, rely=0.84, width=100, anchor=tk.CENTER)
 
-    back_to_last_page_button(main_page)
 
 #define a function that allows the currently logged in user to submit a new item to the main page
 def submit_new_item_function(image_path, current_user_id, item_description):
@@ -238,10 +245,6 @@ def submit_new_item_function(image_path, current_user_id, item_description):
 
     # append the data frame user_data to the csv file
     item_data.to_csv("data/item_info.csv", index=False, mode='a', header=False)
-
-   # print(image_path.get())
-    #print(current_user_id)
-    #print(item_description.get())
 
 # create a new page that allows users to submit new items to offer in the app
 def item_submit_page():
@@ -266,7 +269,8 @@ def item_submit_page():
     item_description_entry = tk.Entry(root,
                                       textvar=item_description).place(relx=0.5, rely=0.45, width=100, anchor=tk.CENTER)
 
-    # create a button that triggers submti to be true using the funciton above
+    # lambda allows the function executed in command to have expressions
+    # the button executes the submit_new_item_function with the information submitted and the user name retrieved from login
     submit_button = tk.Button(root,
                               text='Submit Item',
                               command=lambda: submit_new_item_function(image_path, current_user_id, item_description))
@@ -275,52 +279,104 @@ def item_submit_page():
 
     back_to_last_page_button(main_page)
 
-# define a function for the mainpage
+# create a function that can display a description and an image and item as a button using a filepath from the database
+# as the filepath comes from the tuples list, it can be iterated and the value of i can be used to display the desired
+# image and description
+def display_image_as_button_function(i):
+    # these variables need to go global so that they can be destroyed in the main_page function to make space for a new
+    # image to be displayed
+    global test_item_button, item_description_label
+
+    if i < len(item_info_tuples_list):
+        print('all good')
+        # retrieve the item descriptions from the list and display it as a label
+        # the same i value can be used for image and description as they are stored in the same tuple in the list
+        item_description = item_info_tuples_list[i][2]
+        # retrieve the user id from the list, also here i selects the correct row that matches the description and the image
+        user_id = item_info_tuples_list[i][0]
+        display_text = user_id + ' posted: ' + item_description
+        item_description_label = tk.Label(root,
+                                          text=display_text)
+        item_description_label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+        # use pillow image to read out the jpg using the tuples list that stores the rows from item_info.csv
+        # here i is the selector for the tuple that stores one row of data from the table
+        pillow_image = Image.open(item_info_tuples_list[i][1])
+        # .size method to get the actual dimensions of the image that is being read out
+        width, height = pillow_image.size
+        # resize image with pillow, use round to keep the pixel value as an integer
+        resized_pillow_image = pillow_image.resize((round(width / 3), round(height / 3)))
+        # define a variable that makes the image accessible for tkinter with PhotoImage method
+        tkinter_image = ImageTk.PhotoImage(resized_pillow_image)
+
+        # create a button that is a clickable image
+        test_item_button = tk.Button(root,
+                                     image=tkinter_image,
+                                     command=lambda: [chat_page()])
+        # store the image with .photo method to avoid the image being lost
+        test_item_button.photo = tkinter_image
+        test_item_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+
+
+# a function that calls the display image as a button function and skips either forward or backward depending on the
+# user input from the main_page function
+def display_individual_post_function(a=None):
+    # global i so it can be used in other functions
+    global i
+    # if the argument passed in the function is True increment i+1 and show the next post from the database
+    if a == True:
+        i += 1
+        display_image_as_button_function(i)
+    # if the argument passed is not True, decrement i-1 and show the previous post
+    else:
+        i -= 1
+        display_image_as_button_function(i)
+
+# define a function for the main page
 def main_page():
     global current_user_id
     # destroy the current gui page
     clear_widgets()
 
+    # display the background image
     add_image(root, "images/mainscreen.png", screen_width, screen_height)
 
-    #get the user_id that was used to login, so it can be displayed in the welcome message below
-    current_user_id = user_id.get()
-
-    username_label_var = tk.StringVar()
-    username_label_var.set("Hi! You are logged in as " + current_user_id)
-
-    username_label = tk.Label(root,
-                              textvariable=username_label_var )
-    username_label.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
-
-    # create a logout button, that leads back to login page
-    logout = tk.Button(root,
-                      text='Logout',
-                      command=login_page)
-    logout.place(relx=0.5, rely=0.9, width=100, anchor=tk.CENTER)
-
-
-
-    # use pillow image to read out the jpg
-    pillow_image = Image.open("images/photo_3_2024-05-27_15-59-53.jpg")
-    #resize image with pillow
-    resized_pillow_image = pillow_image.resize((100, 200))
-    #define a variable that reads out an image with PhotoImage method
-    tkinter_image = ImageTk.PhotoImage(resized_pillow_image)
-    #create a button that is a clickeable image
-    test_item_button = tk.Button(root,
-                                 image =tkinter_image,
-                                 command=chat_page).place(relx=0.5, rely=0.3, width=200, height=100, anchor=tk.CENTER)
-
-    image_label = tk.Label(root,
-                           image=tkinter_image).place(relx=0.5, rely=0.7, anchor=tk.CENTER)
-
+    # call the display individual post function one time to show the first post
+    # without the need to click the next button first
+    display_individual_post_function(1)
+    print(i)
+    show_next_image_button = tk.Button(root,
+                                       text='next',
+                                       command=lambda:[test_item_button.destroy(), item_description_label.destroy(), display_individual_post_function(True)])
+    show_next_image_button.place(relx=0.75, rely=0.6, width=100, anchor=tk.CENTER)
+    show_previous_image_button = tk.Button(root,
+                                       text='previous',
+                                       command=lambda:[test_item_button.destroy(), item_description_label.destroy(), display_individual_post_function(False)])
+    show_previous_image_button.place(relx=0.25, rely=0.6, width=100, anchor=tk.CENTER)
+        #image_label = tk.Label(root,
+     #                      image=tkinter_image).place(relx=0.5, rely=0.7, anchor=tk.CENTER)
 
     #image_path = "images/photo_1_2024-05-27_15-59-53.jpg"
     # create a submit a new item button
     submit_new_item_button = tk.Button(root,
                                        text="Insert a new item",
                                        command=item_submit_page).place(relx=0.5, rely=0.75, anchor=tk.CENTER)
+
+    # get the user_id that was used to login, so it can be displayed in the welcome message below
+    current_user_id = user_id.get()
+
+    username_label_var = tk.StringVar()
+    username_label_var.set("Hi! You are logged in as " + current_user_id)
+
+    username_label = tk.Label(root,
+                              textvariable=username_label_var)
+    username_label.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
+
+    # create a logout button, that leads back to login page
+    logout = tk.Button(root,
+                       text='Logout',
+                       command=login_page)
+    logout.place(relx=0.5, rely=0.9, width=100, anchor=tk.CENTER)
 
 #
 #    # place the Label that holds the image, relwidth, relheight ensures that the image is taking up the whole screen
@@ -334,7 +390,6 @@ def main_page():
 
 #initalise the gui manually to avoid circular referencing
 login_page()
-
 
 # set the minimum size of the window to the variables defined above
 #root.minsize(screen_width, screen_height)
