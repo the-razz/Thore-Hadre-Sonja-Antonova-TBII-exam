@@ -16,6 +16,7 @@ root.title("Food Sharing")
 screen_width = 720
 screen_height = 1080
 
+# i=-1 to initialise the function that displays the individual posts in the main_page
 i=-1
 
 def user_check():
@@ -109,7 +110,6 @@ def back_to_last_page_button(last_page_name):
 
 def login_page():
     global user_id, user_password, entered_user_data
-
     # destroy the current gui page
     clear_widgets()
 
@@ -144,7 +144,7 @@ def login_page():
     # create a login button
     login = tk.Button(root,
                       text='Login',
-                      command=user_check)
+                      command=lambda:[user_check(), test_item_button.destroy(), item_description_label.destroy(), display_individual_post_function(False)])
     login.place(relx=0.5, rely=0.84, width=110, anchor=tk.CENTER)
 
     new_user_button = tk.Button(root,
@@ -222,6 +222,29 @@ def chat_page():
 
     add_image(root,"images/food-screen.png", screen_width, screen_height)
 
+    # create the text box
+    text_box = tk.Text(root,
+                       width=60)
+    text_box.place(x=0, y=30, relwidth=1, relheight=1)  # these attributes ensure it takes up the entire screen
+    # add some text that introduces the chatbot
+    # text_box.insert(tk.END, "Bot: Hi there, what can I do for you? Please ask your question below")
+
+    # create a scrollbar for the textbox
+    scroll_bar = tk.Scrollbar(text_box)
+    scroll_bar.place(relheight=1, relx=0.974)
+
+    # create an entry box for user to enter message
+    entry_box = tk.Entry(root,
+                         width=55
+                         )
+    entry_box.place(x=5, rely=0.925)
+
+    send_button = tk.Button(root,
+                            text="Send",
+                            # command=send,
+                            width=10)
+    send_button.place(relx=0.77, rely=0.925)
+
     # create a custom back button that is also functioning the same way as the previous button from the main page
     # to make sure the user does go back to exactly where they came from when clicking on the item
     back_button = tk.Button(root,
@@ -277,7 +300,14 @@ def item_submit_page():
 
     submit_button.place(relx=0.5, rely=0.6, width=100, anchor=tk.CENTER)
 
-    back_to_last_page_button(main_page)
+    # create a custom back button that is also functioning the same way as the previous button from the main page
+    # to make sure the user does go back to exactly where they came from when clicking on the item
+    back_button = tk.Button(root,
+                            text='Back to last page',
+                            command=lambda: [test_item_button.destroy(), item_description_label.destroy(),
+                                             display_individual_post_function(False),
+                                             main_page()])
+    back_button.place(relx=0.5, rely=0.84, width=100, anchor=tk.CENTER)
 
 # create a function that can display a description and an image and item as a button using a filepath from the database
 # as the filepath comes from the tuples list, it can be iterated and the value of i can be used to display the desired
@@ -289,15 +319,6 @@ def display_image_as_button_function(i):
 
     if i < len(item_info_tuples_list):
         print('all good')
-        # retrieve the item descriptions from the list and display it as a label
-        # the same i value can be used for image and description as they are stored in the same tuple in the list
-        item_description = item_info_tuples_list[i][2]
-        # retrieve the user id from the list, also here i selects the correct row that matches the description and the image
-        user_id = item_info_tuples_list[i][0]
-        display_text = user_id + ' posted: ' + item_description
-        item_description_label = tk.Label(root,
-                                          text=display_text)
-        item_description_label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
         # use pillow image to read out the jpg using the tuples list that stores the rows from item_info.csv
         # here i is the selector for the tuple that stores one row of data from the table
         pillow_image = Image.open(item_info_tuples_list[i][1])
@@ -315,6 +336,16 @@ def display_image_as_button_function(i):
         # store the image with .photo method to avoid the image being lost
         test_item_button.photo = tkinter_image
         test_item_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+        # retrieve the item descriptions from the list and display it as a label
+        # the same i value can be used for image and description as they are stored in the same tuple in the list
+        item_description = item_info_tuples_list[i][2]
+        # retrieve the user id from the list, also here i selects the correct row that matches the description and the image
+        user_id = item_info_tuples_list[i][0]
+        display_text = user_id + ' posted: ' + item_description
+        item_description_label = tk.Label(root,
+                                          text=display_text)
+        item_description_label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 
 
 
@@ -353,14 +384,11 @@ def main_page():
                                        text='previous',
                                        command=lambda:[test_item_button.destroy(), item_description_label.destroy(), display_individual_post_function(False)])
     show_previous_image_button.place(relx=0.25, rely=0.6, width=100, anchor=tk.CENTER)
-        #image_label = tk.Label(root,
-     #                      image=tkinter_image).place(relx=0.5, rely=0.7, anchor=tk.CENTER)
-
-    #image_path = "images/photo_1_2024-05-27_15-59-53.jpg"
     # create a submit a new item button
     submit_new_item_button = tk.Button(root,
                                        text="Insert a new item",
-                                       command=item_submit_page).place(relx=0.5, rely=0.75, anchor=tk.CENTER)
+                                       command=item_submit_page)
+    submit_new_item_button.place(relx=0.5, rely=0.75, anchor=tk.CENTER)
 
     # get the user_id that was used to login, so it can be displayed in the welcome message below
     current_user_id = user_id.get()
