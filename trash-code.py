@@ -93,3 +93,27 @@ new_variable = "Flynn"
 #print(all_item_info)
 
 # tkinter_image = add_image(root, "images/photo_3_2024-05-27_15-59-53.jpg", 10, 20)
+
+#image_label = tk.Label(root,
+     #                      image=tkinter_image).place(relx=0.5, rely=0.7, anchor=tk.CENTER)
+
+    #image_path = "images/photo_1_2024-05-27_15-59-53.jpg"
+
+#
+#    # place the Label that holds the image, relwidth, relheight ensures that the image is taking up the whole screen
+#    background.place(x=0, y=0, relwidth=1, relheight=1)
+
+    #clothes_page_button = tk.Button(root,
+     #                          text="Returning User",
+      #                         command=clothes_page)
+   # clothes_page_button.pack()
+
+
+for i in range(len(chat_data_tuples_list)):
+    # print the message for testing purposes
+    # print(item_info_tuples_list[i][0] + " posted " + item_info_tuples_list[i][1] + " with the following image " + item_info_tuples_list[i][2])
+    print(chat_data_tuples_list[i][0] + " texted " + chat_data_tuples_list[i][1] + " to " + chat_data_tuples_list[i][2])
+    i == i + 1
+    meta_list = [chat_data_tuples_list[i][0], chat_data_tuples_list[i][1], chat_data_tuples_list[i][2]]
+
+message_receiver = meta_list[2]

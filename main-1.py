@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import messagebox
 #import modules as needed
 from tkinter import *
-# try importing numpy to fix the import pandas as pd issue
 import pandas as pd
 from PIL import Image, ImageTk
 
@@ -27,6 +26,7 @@ def user_check():
     user_ids = list(pd.read_csv("data/users_data.csv", sep=',', on_bad_lines='skip').user_id)
     # if user exists - go to a new page, for instance
     if user_id.get() in user_ids:
+        clear_widgets()
         main_page()
     # otherwise give error
     else:
@@ -144,7 +144,7 @@ def login_page():
     # create a login button
     login = tk.Button(root,
                       text='Login',
-                      command=lambda:[user_check(), test_item_button.destroy(), item_description_label.destroy(), display_individual_post_function(False)])
+                      command=lambda:[user_check(), display_individual_post_function(False)])
     login.place(relx=0.5, rely=0.84, width=110, anchor=tk.CENTER)
 
     new_user_button = tk.Button(root,
@@ -216,18 +216,52 @@ def new_user_page():
 
     back_to_last_page_button(login_page)
 
+
+# a function that stores the entered messages from the csv into a csv file when the submit button is pressed
+def submit_message_function(submitted_message):
+
+    # get the input message from the entry box in the submit button on the chat page
+    # transform the message, the current user, and the receiver into a data frame
+    submitted_message_data_frame = pd.DataFrame({"submitter_id": [current_user_id],
+                     "submitter_message": [submitted_message],
+                     "message_receiver": [item_info_tuples_list[i][0]]
+                     })
+
+    # save the data frame as a csv file
+    submitted_message_data_frame.to_csv("data/chat_data.csv", index=False, mode='a', header=False)
+
+
+# a function that reads out chat_data.csv and stores the information as a tuples list
+def retrieve_chat_message_function():
+    # global the list so that the information can be used in other functions
+    global chat_data_tuples_list
+    # read out the whole content of the csv file chat_data and store it as a dataframe
+    chat_data_data_frame = pd.read_csv("data/chat_data.csv", sep=',', on_bad_lines='skip', header=None)
+
+    # create a list that stores the value tuples taken from chat_data_data_frame
+    chat_data_tuples_list = []
+
+    # create a for loop that stores each row of information in a list that can be used to display the items later
+    # use iterrows method of pandas to iterate over the rows of the dataframe
+    for index, row in chat_data_data_frame.iterrows():
+        # append the values from the cells to the list as tuples
+        chat_data_tuples_list.append((row[0], row[1], row[2]))
+
+
 def chat_page():
     #clear all widgets
     clear_widgets()
 
+    # run the retrieve message function to load the list that is being created in the function
+    retrieve_chat_message_function()
+
+    # load and display the background image
     add_image(root,"images/food-screen.png", screen_width, screen_height)
 
     # create the text box
     text_box = tk.Text(root,
                        width=60)
     text_box.place(x=0, y=30, relwidth=1, relheight=1)  # these attributes ensure it takes up the entire screen
-    # add some text that introduces the chatbot
-    # text_box.insert(tk.END, "Bot: Hi there, what can I do for you? Please ask your question below")
 
     # create a scrollbar for the textbox
     scroll_bar = tk.Scrollbar(text_box)
@@ -239,12 +273,6 @@ def chat_page():
                          )
     entry_box.place(x=5, rely=0.925)
 
-    send_button = tk.Button(root,
-                            text="Send",
-                            # command=send,
-                            width=10)
-    send_button.place(relx=0.77, rely=0.925)
-
     # create a custom back button that is also functioning the same way as the previous button from the main page
     # to make sure the user does go back to exactly where they came from when clicking on the item
     back_button = tk.Button(root,
@@ -252,6 +280,59 @@ def chat_page():
                             command=lambda: [test_item_button.destroy(), item_description_label.destroy(), display_individual_post_function(False),
                                              main_page()])
     back_button.place(relx=0.5, rely=0.84, width=100, anchor=tk.CENTER)
+
+
+    # retrieve the name of the person whose chat page is currently open
+    # i is selecting the right tuple from the list because it is the corresponding number to the item that the user
+    # clicked on before
+    item_poster = item_info_tuples_list[i][0]
+
+    # initalising a new iteration variable for the while loop to follow
+    d = 0
+    # a while loop that loops until the message receiver function is found in the item_info_tuples_list
+    # so, it checks whether the person that is currently being chatted with is the receiver of a message that is stored
+    # in the chat_data.csv table
+    while d < len(chat_data_tuples_list):
+        # retrieve each username from the list that reads out the data from the csv file
+        message_receiver = chat_data_tuples_list[d][2]
+        if item_poster == message_receiver:
+            # if two identical names are found the correct name is stored as a variable and the while loop breaks
+            current_chat_partner = message_receiver
+            break
+        # increment d by one for each iteration of the loop
+        d += 1
+
+    #if item_poster in chat_data_tuples_list[][2]
+
+    if current_chat_partner == chat_data_tuples_list[d][2]:
+        True
+        c = 0
+        while True:
+            display_message_text = current_chat_partner + " received the message: " + "\'" + chat_data_tuples_list[d][
+                1] + "\'"
+            display_message_label = tk.Label(root,
+                                            text=display_message_text,
+                                            )
+            display_message_label.place(relx=0.6, rely=0.3 + (c / 20), anchor=tk.CENTER)
+            c += 1
+            print('yeah yeah')
+            d += 1
+            break
+        d += 1
+
+    send_button = tk.Button(root,
+                            text="Send",
+                            command=lambda: [submit_message_function(entry_box.get()),
+                                             retrieve_chat_message_function()],
+                            width=10)
+    send_button.place(relx=0.77, rely=0.925)
+
+    username_label_var = tk.StringVar()
+    username_label_var.set("Chat with: " + item_info_tuples_list[i][0])
+
+    username_label = tk.Label(root,
+                              textvariable=username_label_var)
+    username_label.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
 
 
 #define a function that allows the currently logged in user to submit a new item to the main page
@@ -369,6 +450,9 @@ def main_page():
     # destroy the current gui page
     clear_widgets()
 
+    # recall the item name retrieve function to update the item info csv table in case new items were added
+    item_name_retrieve_function()
+
     # display the background image
     add_image(root, "images/mainscreen.png", screen_width, screen_height)
 
@@ -405,15 +489,6 @@ def main_page():
                        text='Logout',
                        command=login_page)
     logout.place(relx=0.5, rely=0.9, width=100, anchor=tk.CENTER)
-
-#
-#    # place the Label that holds the image, relwidth, relheight ensures that the image is taking up the whole screen
-#    background.place(x=0, y=0, relwidth=1, relheight=1)
-
-    #clothes_page_button = tk.Button(root,
-     #                          text="Returning User",
-      #                         command=clothes_page)
-   # clothes_page_button.pack()
     return
 
 #initalise the gui manually to avoid circular referencing
