@@ -1,19 +1,29 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, Tk, Frame, Canvas
 #import modules as needed
 from tkinter import *
 import pandas as pd
 from PIL import Image, ImageTk
 
+# variable for the minimum size f the window, portrait format for smartphone application
+screen_width = 720
+screen_height = 1080
 # set root to make it easier to code and read the tkinter commands
 root = tk.Tk()
 
 # title the window
 root.title("Food Sharing")
+light_green='#236966'
+dark_green='#124222'
+violet='#A99ACA'
+blue='#2375B9'
+teal='#226D88'
 
-# variable for the minimum size f the window, portrait format for smartphone application
-screen_width = 720
-screen_height = 1080
+font1='Helvetica'
+# set the minimum size of the window to the variables defined above
+root.minsize(round(screen_width*1.2), round(screen_height*0.8))
+
+
 
 # i=-1 to initialise the function that displays the individual posts in the main_page
 i=-1
@@ -28,6 +38,9 @@ def user_check():
     if user_id.get() in user_ids:
         clear_widgets()
         main_page()
+        # call the display individual post function to reset the counter to -1 so that when a user logs in for the second
+        # time using the app without restarting, they are not sbown an empty page
+        display_individual_post_function(False)
     # otherwise give error
     else:
         tk.messagebox.showwarning("Warning!!", "Please register as a new user")
@@ -105,37 +118,48 @@ def back_to_last_page_button(last_page_name):
     #create a button that displays the text back to last page and leads to the page specified in the code
     back_to_last_page_button = tk.Button(root,
                                          text='Back to last page',
-                                         command=last_page_name)
-    back_to_last_page_button.place(relx=0.5, rely=0.84, width=100, anchor=tk.CENTER)
+                                         command=last_page_name,
+                                         font=font1)
+    back_to_last_page_button.place(relx=0.5, rely=0.84, anchor=tk.CENTER)
+
+
 
 def login_page():
     global user_id, user_password, entered_user_data
     # destroy the current gui page
     clear_widgets()
 
-    #user_id = ("Flynn")
-
-    add_image(root, "images/login.png", screen_width, screen_height)
+    root.config(bg=dark_green)
+    # display the logo of the app
+    add_image(root, "images/new-logo.png", 270, 205)
 
     # ask for username
     username_label = tk.Label(root,
-                              text="Enter your username:")
-    username_label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+                              text="Enter your username:",
+                              bg=light_green,
+                              fg='white',
+                              font=font1)
+    username_label.place(relx=0.5, y=270, width=200, anchor=tk.CENTER)
     # enter a name
     user_id = tk.StringVar()
     user_id_entry = tk.Entry(root,
-                          textvar=user_id)
-    user_id_entry.place(relx=0.5, rely=0.3, width=100, anchor=tk.CENTER)
+                          textvar=user_id,
+                             font=font1)
+    user_id_entry.place(relx=0.5, y=300, width=200, anchor=tk.CENTER)
 
     # ask for password
     user_password_label = tk.Label(root,
-                              text="Enter your password:")
-    user_password_label.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
+                              text="Enter your password:",
+                              bg=light_green,
+                              fg='white',
+                              font=font1)
+    user_password_label.place(relx=0.5, y=350, width=200, anchor=tk.CENTER)
     # enter a password
     user_password = tk.StringVar()
     user_password_entry = tk.Entry(root,
-                              textvar=user_password)
-    user_password_entry.place(relx=0.5, rely=0.5, width=100, anchor=tk.CENTER)
+                              textvar=user_password,
+                                   font=font1)
+    user_password_entry.place(relx=0.5, y=380, width=200, anchor=tk.CENTER)
 
 
     entered_user_data = [user_id, user_password]
@@ -144,13 +168,23 @@ def login_page():
     # create a login button
     login = tk.Button(root,
                       text='Login',
-                      command=lambda:[user_check(), display_individual_post_function(False)])
-    login.place(relx=0.5, rely=0.84, width=110, anchor=tk.CENTER)
+                      command=lambda:[user_check()],
+                              bg='white',
+                              fg='DodgerBlue',
+                      font=font1)
+    login.place(relx=0.5, y=440, width=200, anchor=tk.CENTER)
 
     new_user_button = tk.Button(root,
                                 text='Create a new user',
-                                command=new_user_page)
-    new_user_button.place(relx=0.5, rely=0.9, width=110, anchor=tk.CENTER)
+                                command=new_user_page,
+                              bg=light_green,
+                              fg='white',
+                                font=font1)
+    new_user_button.place(relx=0.5, y=490, width=200, anchor=tk.CENTER)
+
+    starting_message = '''Hello there! Welcome to the Sharing is caring app! We are very pleased to have you here :) Please note that new users must sign in first. This app is a place to share food and other things and to a place care for our environment. So take care of your social and natural surroundings and share what other wise would go to waste without expecting to earn money exchange other goods for what you are offering. Thank you! And have fun :D'''
+
+    messagebox.showinfo("WELCOME!", starting_message)
 
 #create a funciton that submits the input user information to the data base, when creating an account
 def submit_user_data():
@@ -186,36 +220,62 @@ def new_user_page():
 
     clear_widgets()
 
+    root.config(bg=light_green)
+    # display the logo of the app
+    add_image(root, "images/new-logo.png", 270, 205)
+
     new_username_label = tk.Label(root,
-                              text="Enter your desired username:")
-    new_username_label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+                              text="Enter your desired username:",
+                                  font=font1)
+    new_username_label.place(relx=0.5, y=270, anchor=tk.CENTER)
     # enter a name
     new_user_id = tk.StringVar()
     new_user_id_entry = tk.Entry(root,
-                             textvar=new_user_id)
-    new_user_id_entry.place(relx=0.5, rely=0.3, width=100, anchor=tk.CENTER)
+                             textvar=new_user_id,
+                                  font=font1)
+    new_user_id_entry.place(relx=0.5, y=300, width=200, anchor=tk.CENTER)
 
     # ask for password
     new_user_password_label = tk.Label(root,
-                                   text="Enter your password:")
-    new_user_password_label.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
+                                   text="Enter your password:",
+                                  font=font1)
+    new_user_password_label.place(relx=0.5, y=350, anchor=tk.CENTER)
     # enter a password
     new_user_password = tk.StringVar()
     new_user_password_entry = tk.Entry(root,
-                                   textvar=new_user_password)
-    new_user_password_entry.place(relx=0.5, rely=0.5, width=100, anchor=tk.CENTER)
+                                   textvar=new_user_password,
+                                  font=font1)
+    new_user_password_entry.place(relx=0.5, y=380, width=200, anchor=tk.CENTER)
 
 
     #create a submit button that executes the submit_user_data function defined above
     submit_button = tk.Button(root,
-                              text="Submit",
-                              command=submit_user_data)
-    submit_button.place(relx=0.5, rely=0.75, width=100, anchor=tk.CENTER)
+                              text="Submit and go to login",
+                              command=lambda:[submit_user_data(), login_page()],
+                              font=font1)
+    submit_button.place(relx=0.5, y=440, anchor=tk.CENTER)
 
     ### create a function that submits the entered data to the database, after checking if the username is still available###
 
     back_to_last_page_button(login_page)
 
+def main_design_function(background_color):
+    global current_user_id
+
+    root.config(bg=background_color)
+    # display the logo of the app
+    add_image(root, "images/new-logo.png",270, 205)
+
+    # get the user_id that was used to login, so it can be displayed in the welcome message below
+    current_user_id = user_id.get()
+
+    username_label_var = tk.StringVar()
+    username_label_var.set("Hi! You are logged in as " + current_user_id)
+
+    username_label = tk.Label(root,
+                              textvariable=username_label_var,
+                              font=font1)
+    username_label.place(relx=0.5, y=30, anchor=tk.CENTER)
 
 # a function that stores the entered messages from the csv into a csv file when the submit button is pressed
 def submit_message_function(submitted_message):
@@ -247,41 +307,6 @@ def retrieve_chat_message_function():
         # append the values from the cells to the list as tuples
         chat_data_tuples_list.append((row[0], row[1], row[2]))
 
-
-def chat_page():
-    #clear all widgets
-    clear_widgets()
-
-    # run the retrieve message function to load the list that is being created in the function
-    retrieve_chat_message_function()
-
-    # load and display the background image
-    add_image(root,"images/food-screen.png", screen_width, screen_height)
-
-    # create the text box
-    text_box = tk.Text(root,
-                       width=60)
-    text_box.place(x=0, y=30, relwidth=1, relheight=1)  # these attributes ensure it takes up the entire screen
-
-    # create a scrollbar for the textbox
-    scroll_bar = tk.Scrollbar(text_box)
-    scroll_bar.place(relheight=1, relx=0.974)
-
-    # create an entry box for user to enter message
-    entry_box = tk.Entry(root,
-                         width=55
-                         )
-    entry_box.place(x=5, rely=0.925)
-
-    # create a custom back button that is also functioning the same way as the previous button from the main page
-    # to make sure the user does go back to exactly where they came from when clicking on the item
-    back_button = tk.Button(root,
-                            text='Back to last page',
-                            command=lambda: [test_item_button.destroy(), item_description_label.destroy(), display_individual_post_function(False),
-                                             main_page()])
-    back_button.place(relx=0.5, rely=0.84, width=100, anchor=tk.CENTER)
-
-
     # retrieve the name of the person whose chat page is currently open
     # i is selecting the right tuple from the list because it is the corresponding number to the item that the user
     # clicked on before
@@ -298,41 +323,89 @@ def chat_page():
         if item_poster == message_receiver:
             # if two identical names are found the correct name is stored as a variable and the while loop breaks
             current_chat_partner = message_receiver
+
+            if current_chat_partner == chat_data_tuples_list[d][2]:
+                True
+                c = 0
+                while True:
+                    display_message_text = current_chat_partner + " received the message: " + "\'" + \
+                                           chat_data_tuples_list[d][
+                                               1] + "\'"
+
+                    text_box.insert('end', display_message_text)
+                    c += 1
+                    print('yeah yeah')
+                    d += 1
+                    break
+                d += 1
             break
         # increment d by one for each iteration of the loop
         d += 1
 
-    #if item_poster in chat_data_tuples_list[][2]
+        # if item_poster in chat_data_tuples_list[][2]
 
-    if current_chat_partner == chat_data_tuples_list[d][2]:
-        True
-        c = 0
-        while True:
-            display_message_text = current_chat_partner + " received the message: " + "\'" + chat_data_tuples_list[d][
-                1] + "\'"
-            display_message_label = tk.Label(root,
-                                            text=display_message_text,
-                                            )
-            display_message_label.place(relx=0.6, rely=0.3 + (c / 20), anchor=tk.CENTER)
-            c += 1
-            print('yeah yeah')
-            d += 1
-            break
-        d += 1
+def chat_page():
+    global text_box
+    #clear all widgets
+    clear_widgets()
+
+    main_design_function(background_color=violet)
+
+
+
+    # create the text box
+    text_box = tk.Text(root,
+                       width=60,
+                       bg=violet,
+                       fg='white',
+                       font=font1
+                       )
+    text_box.place(x=0, rely=0.35, relwidth=1, relheight=0.5)  # these attributes ensure it takes up the entire screen
+
+    # create a scrollbar for the textbox
+    scroll_bar = tk.Scrollbar(text_box)
+    scroll_bar.place(relheight=0.9, relx=0.974)
+
+    entry_box_width = round(screen_width/10)
+    # create an entry box for user to enter message
+    entry_box = tk.Entry(root,
+                         font=font1
+                         )
+    entry_box.place(x=5, rely=0.825, relwidth=0.6, height=30)
 
     send_button = tk.Button(root,
                             text="Send",
                             command=lambda: [submit_message_function(entry_box.get()),
                                              retrieve_chat_message_function()],
-                            width=10)
-    send_button.place(relx=0.77, rely=0.925)
+                            width=10,
+                            font=font1)
+
+    send_button.place(relx=0.77, rely=0.825)
+
+    # run the retrieve message function to load the list that is being created in the function
+    retrieve_chat_message_function()
+
+
+
+
+
+
+    # create a custom back button that is also functioning the same way as the previous button from the main page
+    # to make sure the user does go back to exactly where they came from when clicking on the item
+    back_button = tk.Button(root,
+                            text='Back to last page',
+                            command=lambda: [main_page()],
+                            font=font1)
+    back_button.place(relx=0.5, rely=0.925, width=200, anchor=tk.CENTER)
 
     username_label_var = tk.StringVar()
     username_label_var.set("Chat with: " + item_info_tuples_list[i][0])
 
     username_label = tk.Label(root,
-                              textvariable=username_label_var)
-    username_label.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
+                              textvariable=username_label_var,
+                              font=font1
+                              )
+    username_label.place(relx=0.5, y=270, anchor=tk.CENTER)
 
 
 #define a function that allows the currently logged in user to submit a new item to the main page
@@ -350,45 +423,67 @@ def submit_new_item_function(image_path, current_user_id, item_description):
     # append the data frame user_data to the csv file
     item_data.to_csv("data/item_info.csv", index=False, mode='a', header=False)
 
+    # display a message that thanks the user for sharing a new item
+    tk.messagebox.showinfo("Sharing successful", "Thank you for sharing!!! And always remember: SHARING IS CARING")
+
 # create a new page that allows users to submit new items to offer in the app
 def item_submit_page():
     global submit
     #submit_boolean()
     clear_widgets()
 
+    main_design_function(background_color=blue)
+
     image_file_path_label = tk.Label(root,
                                            text='Please enter the file path for your image',
-                                           ).place(relx=0.5, rely=0.2, width=250, anchor=tk.CENTER)
+                                           font=font1,
+                                        bg="DarkBlue",
+                                        fg="white",
+                                           ).place(relx=0.5, y=270, anchor=tk.CENTER)
 
     image_path = tk.StringVar()
 
     image_file_path_entry = tk.Entry(root,
-                                           textvar=image_path).place(relx=0.5, rely=0.25, width=100, anchor=tk.CENTER)
+                                           textvar=image_path,
+                                           font=font1,
+                                     ).place(relx=0.5, y=300, width=400, anchor=tk.CENTER)
 
     enter_item_description_label = tk.Label(root,
-                                            text='Please enter an item description').place(relx=0.5, rely=0.4, width=250, anchor=tk.CENTER)
+                                            text='Please enter an item description',
+                                           font=font1,
+                                        bg="DarkBlue",
+                                        fg="white",
+                                            ).place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
     item_description = tk.StringVar()
 
     item_description_entry = tk.Entry(root,
-                                      textvar=item_description).place(relx=0.5, rely=0.45, width=100, anchor=tk.CENTER)
+                                      textvar=item_description,
+                                           font=font1,
+                                      ).place(relx=0.5, rely=0.535, width=200, anchor=tk.CENTER)
 
     # lambda allows the function executed in command to have expressions
     # the button executes the submit_new_item_function with the information submitted and the user name retrieved from login
     submit_button = tk.Button(root,
                               text='Submit Item',
-                              command=lambda: submit_new_item_function(image_path, current_user_id, item_description))
+                              command=lambda: submit_new_item_function(image_path, current_user_id, item_description),
+                              font=font1,
+                              bg="white",
+                              fg="DodgerBlue",
+                              )
 
-    submit_button.place(relx=0.5, rely=0.6, width=100, anchor=tk.CENTER)
+    submit_button.place(relx=0.5, rely=0.7, width=200, anchor=tk.CENTER)
 
     # create a custom back button that is also functioning the same way as the previous button from the main page
     # to make sure the user does go back to exactly where they came from when clicking on the item
     back_button = tk.Button(root,
                             text='Back to last page',
-                            command=lambda: [test_item_button.destroy(), item_description_label.destroy(),
-                                             display_individual_post_function(False),
-                                             main_page()])
-    back_button.place(relx=0.5, rely=0.84, width=100, anchor=tk.CENTER)
+                            command=lambda: [display_individual_post_function(False),
+                                             main_page()],
+                                        font=font1,
+                                        bg="DarkBlue",
+                                        fg="white",)
+    back_button.place(relx=0.5, rely=0.85, width=200, anchor=tk.CENTER)
 
 # create a function that can display a description and an image and item as a button using a filepath from the database
 # as the filepath comes from the tuples list, it can be iterated and the value of i can be used to display the desired
@@ -413,7 +508,8 @@ def display_image_as_button_function(i):
         # create a button that is a clickable image
         test_item_button = tk.Button(root,
                                      image=tkinter_image,
-                                     command=lambda: [chat_page()])
+                                     command=lambda: [chat_page()],
+                                     text=None)
         # store the image with .photo method to avoid the image being lost
         test_item_button.photo = tkinter_image
         test_item_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
@@ -424,11 +520,21 @@ def display_image_as_button_function(i):
         # retrieve the user id from the list, also here i selects the correct row that matches the description and the image
         user_id = item_info_tuples_list[i][0]
         display_text = user_id + ' posted: ' + item_description
-        item_description_label = tk.Label(root,
-                                          text=display_text)
-        item_description_label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+        item_description_box = tk.Text(root,
+                                       width=60,
+                                       bg=light_green,
+                                       fg='white',
+                                       font=font1
+                                       )
+        item_description_box.place(relx=0.5, rely=0.725, width=400, height=100, anchor=tk.CENTER)
 
+        item_description_box.insert('end', display_text)
+        #print(display_text)
+    # elif statement to avoid i being larger than the number of items in the list
+    elif i >= len(item_info_tuples_list):
+        i = len(item_info_tuples_list)-1
 
+display_image_as_button_function(i)
 
 # a function that calls the display image as a button function and skips either forward or backward depending on the
 # user input from the main_page function
@@ -440,61 +546,59 @@ def display_individual_post_function(a=None):
         i += 1
         display_image_as_button_function(i)
     # if the argument passed is not True, decrement i-1 and show the previous post
-    else:
+    elif a == False:
         i -= 1
         display_image_as_button_function(i)
 
+def destroy_old_image_button_function():
+    test_item_button.destroy()
+    item_description_label.destroy()
+    print('we destroy stuff')
+
 # define a function for the main page
 def main_page():
-    global current_user_id
     # destroy the current gui page
     clear_widgets()
+
+    main_design_function(background_color=blue)
 
     # recall the item name retrieve function to update the item info csv table in case new items were added
     item_name_retrieve_function()
 
     # display the background image
-    add_image(root, "images/mainscreen.png", screen_width, screen_height)
+    #add_image(root, "images/mainscreen.png", screen_width, screen_height)
 
-    # call the display individual post function one time to show the first post
-    # without the need to click the next button first
-    display_individual_post_function(1)
+    display_individual_post_function(True)
+
     print(i)
     show_next_image_button = tk.Button(root,
                                        text='next',
-                                       command=lambda:[test_item_button.destroy(), item_description_label.destroy(), display_individual_post_function(True)])
-    show_next_image_button.place(relx=0.75, rely=0.6, width=100, anchor=tk.CENTER)
+                                       command=lambda:[destroy_old_image_button_function(), display_individual_post_function(True)],
+                                       font=font1)
+    show_next_image_button.place(relx=0.85, rely=0.6, width=150, anchor=tk.CENTER)
     show_previous_image_button = tk.Button(root,
                                        text='previous',
-                                       command=lambda:[test_item_button.destroy(), item_description_label.destroy(), display_individual_post_function(False)])
-    show_previous_image_button.place(relx=0.25, rely=0.6, width=100, anchor=tk.CENTER)
+                                       command=lambda:[destroy_old_image_button_function(), display_individual_post_function(False)],
+                                       font=font1)
+    show_previous_image_button.place(relx=0.15, rely=0.6, width=150, anchor=tk.CENTER)
     # create a submit a new item button
     submit_new_item_button = tk.Button(root,
                                        text="Insert a new item",
-                                       command=item_submit_page)
-    submit_new_item_button.place(relx=0.5, rely=0.75, anchor=tk.CENTER)
+                                       command=item_submit_page,
+                                       font=font1)
+    submit_new_item_button.place(relx=0.5, rely=0.85, width=200, anchor=tk.CENTER)
 
-    # get the user_id that was used to login, so it can be displayed in the welcome message below
-    current_user_id = user_id.get()
 
-    username_label_var = tk.StringVar()
-    username_label_var.set("Hi! You are logged in as " + current_user_id)
-
-    username_label = tk.Label(root,
-                              textvariable=username_label_var)
-    username_label.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
 
     # create a logout button, that leads back to login page
     logout = tk.Button(root,
                        text='Logout',
-                       command=login_page)
-    logout.place(relx=0.5, rely=0.9, width=100, anchor=tk.CENTER)
+                       command=login_page,
+                       font=font1)
+    logout.place(relx=0.5, rely=0.9, width=200, anchor=tk.CENTER)
     return
 
 #initalise the gui manually to avoid circular referencing
 login_page()
-
-# set the minimum size of the window to the variables defined above
-#root.minsize(screen_width, screen_height)
 # keep the tkinter looping through so that the application keeps running and the window stays open
 root.mainloop()

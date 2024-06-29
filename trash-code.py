@@ -117,3 +117,80 @@ for i in range(len(chat_data_tuples_list)):
     meta_list = [chat_data_tuples_list[i][0], chat_data_tuples_list[i][1], chat_data_tuples_list[i][2]]
 
 message_receiver = meta_list[2]
+
+
+#user_id = ("Flynn")
+
+    #add_image(root, "images/login.png", screen_width, screen_height)
+
+
+elif i <= -1 * (len(item_info_tuples_list)):
+i = 1 - len(item_info_tuples_list)
+
+# call the display individual post function one time to show the first post
+# without the need to click the next button first
+# display_individual_post_function(1)
+
+display_message_label = tk.Label(root,
+                                            text=display_message_text,
+                                            )
+            display_message_label.place(relx=0.6, rely=0.3 + (c / 20), anchor=tk.CENTER)
+
+
+# retrieve the name of the person whose chat page is currently open
+    # i is selecting the right tuple from the list because it is the corresponding number to the item that the user
+    # clicked on before
+    item_poster = item_info_tuples_list[i][0]
+
+    # initalising a new iteration variable for the while loop to follow
+    d = 0
+    # a while loop that loops until the message receiver function is found in the item_info_tuples_list
+    # so, it checks whether the person that is currently being chatted with is the receiver of a message that is stored
+    # in the chat_data.csv table
+    while d < len(chat_data_tuples_list):
+        # retrieve each username from the list that reads out the data from the csv file
+        message_receiver = chat_data_tuples_list[d][2]
+        if item_poster == message_receiver:
+            # if two identical names are found the correct name is stored as a variable and the while loop breaks
+            current_chat_partner = message_receiver
+            break
+        # increment d by one for each iteration of the loop
+        d += 1
+
+    #if item_poster in chat_data_tuples_list[][2]
+
+    if current_chat_partner == chat_data_tuples_list[d][2]:
+        True
+        c = 0
+        while True:
+            display_message_text = current_chat_partner + " received the message: " + "\'" + chat_data_tuples_list[d][
+                1] + "\'"
+
+            text_box.insert('end', display_message_text)
+            c += 1
+            print('yeah yeah')
+            d += 1
+            break
+        d += 1
+
+
+, display_individual_post_function(False)
+
+# get the user_id that was used to login, so it can be displayed in the welcome message below
+current_user_id = user_id.get()
+
+username_label_var = tk.StringVar()
+username_label_var.set("Hi! You are logged in as " + current_user_id)
+
+username_label = tk.Label(root,
+                          textvariable=username_label_var,
+                          font=font1)
+username_label.place(relx=0.5, y=30, width=200, anchor=tk.CENTER)
+
+
+, relwidth=width+0.1, relheight=height+0.1,
+
+item_description_label = tk.Label(root,
+                                          text=display_text,
+                                          font=font1)
+        item_description_label.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
