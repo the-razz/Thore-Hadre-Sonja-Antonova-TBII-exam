@@ -75,16 +75,6 @@ def item_name_retrieve_function():
         # append the values from the cells to the list as tuples
         item_info_tuples_list.append((row['current_user_id'], row['image_path'], row['item_description']))
 
-    # a for loop that accesses each row in the tuples list and makes it accesible for the next function to use
-    # the range(len(tuples_list)) is required to make sure the iteration continues for number of rows only i.e. the number of tuples
-    # this is necessary because a list with tuples for some reason cannot be iterated >:(
-    for i in range(len(item_info_tuples_list)):
-       # print the message for testing purposes
-       #print(item_info_tuples_list[i][0] + " posted " + item_info_tuples_list[i][1] + " with the following image " + item_info_tuples_list[i][2])
-       i == i+1
-# to realise the list that was created within the function
-item_name_retrieve_function()
-
 # create function for simplified image imports
 def add_image(root, file_path, width, height):
     """This definition will place the image on the gui window.
@@ -109,8 +99,8 @@ def add_image(root, file_path, width, height):
 def clear_widgets():
 
     #loops through all widgets that were created so far and kills them
-    for i in root.winfo_children():
-        i.destroy()
+    for e in root.winfo_children():
+        e.destroy()
 
 # create a flexible button that brings the user back to where they just came from
 #last_page_name must be entered without parenthesis at the end: main_page, login_page
@@ -342,16 +332,12 @@ def retrieve_chat_message_function():
         # increment d by one for each iteration of the loop
         d += 1
 
-        # if item_poster in chat_data_tuples_list[][2]
-
 def chat_page():
     global text_box
     #clear all widgets
     clear_widgets()
 
     main_design_function(background_color=violet)
-
-
 
     # create the text box
     text_box = tk.Text(root,
@@ -385,11 +371,6 @@ def chat_page():
     # run the retrieve message function to load the list that is being created in the function
     retrieve_chat_message_function()
 
-
-
-
-
-
     # create a custom back button that is also functioning the same way as the previous button from the main page
     # to make sure the user does go back to exactly where they came from when clicking on the item
     back_button = tk.Button(root,
@@ -407,7 +388,6 @@ def chat_page():
                               )
     username_label.place(relx=0.5, y=270, anchor=tk.CENTER)
 
-
 #define a function that allows the currently logged in user to submit a new item to the main page
 def submit_new_item_function(image_path, current_user_id, item_description):
     # the variables are placed as lists
@@ -416,9 +396,6 @@ def submit_new_item_function(image_path, current_user_id, item_description):
                               "Image File Path": [image_path.get()],
                               "Item Description": [item_description.get()]
                               })
-
-    # convert the dictionary into a data frame that can be added to the csv file which is also a data frame
-    # user_data = pd.DataFrame([user_data])
 
     # append the data frame user_data to the csv file
     item_data.to_csv("data/item_info.csv", index=False, mode='a', header=False)
@@ -471,14 +448,13 @@ def item_submit_page():
                               bg="white",
                               fg="DodgerBlue",
                               )
-
     submit_button.place(relx=0.5, rely=0.7, width=200, anchor=tk.CENTER)
 
     # create a custom back button that is also functioning the same way as the previous button from the main page
     # to make sure the user does go back to exactly where they came from when clicking on the item
     back_button = tk.Button(root,
                             text='Back to last page',
-                            command=lambda: [display_individual_post_function(False),
+                            command=lambda: [
                                              main_page()],
                                         font=font1,
                                         bg="DarkBlue",
@@ -491,13 +467,17 @@ def item_submit_page():
 def display_image_as_button_function(i):
     # these variables need to go global so that they can be destroyed in the main_page function to make space for a new
     # image to be displayed
-    global test_item_button, item_description_label
+    global test_item_button, item_description_box
 
+
+    # if i is smalle than the length of the list of items it means an item witht he number of i can be  displayed
     if i < len(item_info_tuples_list):
         print('all good')
+        i = int(i)
         # use pillow image to read out the jpg using the tuples list that stores the rows from item_info.csv
         # here i is the selector for the tuple that stores one row of data from the table
-        pillow_image = Image.open(item_info_tuples_list[i][1])
+        file_path = item_info_tuples_list[i][1]
+        pillow_image = Image.open(file_path)
         # .size method to get the actual dimensions of the image that is being read out
         width, height = pillow_image.size
         # resize image with pillow, use round to keep the pixel value as an integer
@@ -530,11 +510,6 @@ def display_image_as_button_function(i):
 
         item_description_box.insert('end', display_text)
         #print(display_text)
-    # elif statement to avoid i being larger than the number of items in the list
-    elif i >= len(item_info_tuples_list):
-        i = len(item_info_tuples_list)-1
-
-display_image_as_button_function(i)
 
 # a function that calls the display image as a button function and skips either forward or backward depending on the
 # user input from the main_page function
@@ -545,14 +520,16 @@ def display_individual_post_function(a=None):
     if a == True:
         i += 1
         display_image_as_button_function(i)
+        print('this is the next', i)
     # if the argument passed is not True, decrement i-1 and show the previous post
     elif a == False:
         i -= 1
         display_image_as_button_function(i)
+        print('this is the previous', i)
 
 def destroy_old_image_button_function():
     test_item_button.destroy()
-    item_description_label.destroy()
+    item_description_box.destroy()
     print('we destroy stuff')
 
 # define a function for the main page
@@ -565,10 +542,19 @@ def main_page():
     # recall the item name retrieve function to update the item info csv table in case new items were added
     item_name_retrieve_function()
 
-    # display the background image
-    #add_image(root, "images/mainscreen.png", screen_width, screen_height)
+    # create a logout button, that leads back to login page
+    logout = tk.Button(root,
+                       text='Logout',
+                       command=login_page,
+                       font=font1)
+    logout.place(relx=0.5, rely=0.9, width=200, anchor=tk.CENTER)
 
-    display_individual_post_function(True)
+    # create a submit a new item button
+    submit_new_item_button = tk.Button(root,
+                                       text="Insert a new item",
+                                       command=item_submit_page,
+                                       font=font1)
+    submit_new_item_button.place(relx=0.5, rely=0.85, width=200, anchor=tk.CENTER)
 
     print(i)
     show_next_image_button = tk.Button(root,
@@ -581,23 +567,12 @@ def main_page():
                                        command=lambda:[destroy_old_image_button_function(), display_individual_post_function(False)],
                                        font=font1)
     show_previous_image_button.place(relx=0.15, rely=0.6, width=150, anchor=tk.CENTER)
-    # create a submit a new item button
-    submit_new_item_button = tk.Button(root,
-                                       text="Insert a new item",
-                                       command=item_submit_page,
-                                       font=font1)
-    submit_new_item_button.place(relx=0.5, rely=0.85, width=200, anchor=tk.CENTER)
-
-
-
-    # create a logout button, that leads back to login page
-    logout = tk.Button(root,
-                       text='Logout',
-                       command=login_page,
-                       font=font1)
-    logout.place(relx=0.5, rely=0.9, width=200, anchor=tk.CENTER)
     return
 
+# to realise the list that was created within the function
+item_name_retrieve_function()
+
+display_individual_post_function(True)
 #initalise the gui manually to avoid circular referencing
 login_page()
 # keep the tkinter looping through so that the application keeps running and the window stays open

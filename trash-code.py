@@ -194,3 +194,22 @@ item_description_label = tk.Label(root,
                                           text=display_text,
                                           font=font1)
         item_description_label.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+# a for loop that accesses each row in the tuples list and makes it accesible for the next function to use
+    # the range(len(tuples_list)) is required to make sure the iteration continues for number of rows only i.e. the number of tuples
+    # this is necessary because a list with tuples for some reason cannot be iterated >:(
+    for i in range(len(item_info_tuples_list)):
+       # print the message for testing purposes
+       #print(item_info_tuples_list[i][0] + " posted " + item_info_tuples_list[i][1] + " with the following image " + item_info_tuples_list[i][2])
+       i == i+1
+
+
+# convert the dictionary into a data frame that can be added to the csv file which is also a data frame
+# user_data = pd.DataFrame([user_data])
+
+# if item_poster in chat_data_tuples_list[][2]
+
+# elif statement to avoid i being larger than the number of items in the list
+    elif i > len(item_info_tuples_list):
+        i = round(len(item_info_tuples_list)-1)
+        display_individual_post_function(i)
