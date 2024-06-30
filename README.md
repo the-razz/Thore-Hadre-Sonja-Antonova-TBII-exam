@@ -16,7 +16,7 @@ group chats.
 For the realisation of the app the libraries tkinter, pandas and pillow were used
 exclusively.
 
-#### Getting started
+### Getting started
 You will have to run this app in a virtual python environment such as venv
 or conda.
 
