@@ -32,6 +32,8 @@ Then you will have to install the following libraries:
 * ``pip freeze``
 * ``pip install pandas``
 * ``pip install pillow``
+
+And run the program:
 * ``python sharing-is-caring.py``
 
 ### Important notes 
