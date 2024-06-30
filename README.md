@@ -32,7 +32,7 @@ Then you will have to install the following libraries:
 * ``pip freeze``
 * ``pip install pandas``
 * ``pip install pillow``
-
+* ``python sharing-is-caring.py``
 
 ### Important notes 
 
