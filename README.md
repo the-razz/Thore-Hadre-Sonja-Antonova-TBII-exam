@@ -22,7 +22,7 @@ or conda.
 
 For Windows:
 * ``python -m venv dev``
-* ``.\deve\Scripts\activate``
+* ``.\dev\Scripts\activate``
 
 For Mac:
 * ``virtualenv -p python dev``
@@ -31,7 +31,7 @@ For Mac:
 Then you will have to install the following libraries:
 * ``pip freeze``
 * ``pip install pandas``
-* ``pip install PIL``
+* ``pip install pillow``
 
 
 ### Important notes 
